@@ -1,18 +1,17 @@
 import { useState } from "react";
 import { productosIniciales } from "../data/productos";
 import ProductCard from "../components/ProductCard";
+import { validarProducto } from "../utilis/validarProducto";
 
 function Products() {
     const [productos, setProductos] = useState(productosIniciales);
-
     const [formulario, setFormulario] = useState({
         nombre: "",
         categoria: "",
         precio: "",
-        stock: ""
+        stock: "",
     })
-
-    console.log(productos, formulario)
+    const [errores, setErrores] = useState({})
 
     function handleDelete(id) {
         setProductos(productosActuales => {
@@ -23,12 +22,19 @@ function Products() {
     function handleSubmit(e) {
         e.preventDefault()
 
+        const nuevosErrores = validarProducto(formulario);
+        setErrores(nuevosErrores)
+
+        if (Object.keys(nuevosErrores).length > 0) {
+            return
+        }
+
         const { nombre, categoria, precio, stock } = formulario;
 
         const nuevoProducto = {
             id: crypto.randomUUID(),
-            nombre: nombre,
-            categoria: categoria,
+            nombre: nombre.trim(),
+            categoria: categoria.trim(),
             precio: Number(precio),
             stock: Number(stock)
         }
@@ -43,6 +49,8 @@ function Products() {
             precio: "",
             stock: "",
         });
+
+        setErrores({})
     }
 
     function handleChange(e) {
@@ -50,9 +58,7 @@ function Products() {
         setFormulario(formularioActual => ({
             ...formularioActual,
             [name]: value
-        })
-        )
-
+        }))
     }
 
     return (
@@ -63,21 +69,33 @@ function Products() {
                 <div>
                     <label htmlFor="nombre">Nombre</label>
                     <input id="nombre" name="nombre" value={formulario.nombre} onChange={handleChange} required />
+                    {errores.nombre && (
+                        <p role="alert">{errores.nombre}</p>
+                    )}
                 </div>
 
                 <div>
                     <label htmlFor="categoria">Categoría</label>
                     <input id="categoria" name="categoria" value={formulario.categoria} onChange={handleChange} required />
+                    {errores.categoria && (
+                        <p role="alert">{errores.categoria}</p>
+                    )}
                 </div>
 
                 <div>
                     <label htmlFor="precio">Precio</label>
-                    <input id="precio" name="precio" type="number" min="0.01" step="0.01" value={formulario.precio} onChange={handleChange} required />
+                    <input id="precio" name="precio" type="number" value={formulario.precio} onChange={handleChange} required />
+                    {errores.precio && (
+                        <p role="alert">{errores.precio}</p>
+                    )}
                 </div>
 
                 <div>
                     <label htmlFor="stock">Stock</label>
-                    <input id="stock" name="stock" type="number" min="0" step="1" value={formulario.stock} onChange={handleChange} required />
+                    <input id="stock" name="stock" type="number" value={formulario.stock} onChange={handleChange} required />
+                    {errores.stock && (
+                        <p role="alert">{errores.stock}</p>
+                    )}
                 </div>
 
                 <button type="submit">Agregar producto</button>
