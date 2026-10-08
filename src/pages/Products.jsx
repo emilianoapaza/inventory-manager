@@ -5,9 +5,11 @@ function Products() {
     return (
         <main>
             <h1>Productos</h1>
-            {productosIniciales.map(producto =>
-                (<ProductCard key={producto.id} producto={producto} />)
-            )}
+            <div className="product-list">
+                {productosIniciales.map(producto =>
+                    (<ProductCard key={producto.id} producto={producto} />)
+                )}
+            </div>
         </main>
     )
 }
