@@ -1,4 +1,4 @@
-function ProductCard({ producto }) {
+function ProductCard({ producto, onDelete }) {
     const { nombre, categoria, precio, stock } = producto
     return (
         <article>
@@ -6,6 +6,7 @@ function ProductCard({ producto }) {
             <p>Categoría: {categoria}</p>
             <p>Precio: {precio}</p>
             <p>Stock: {stock}</p>
+            <button onClick={() => onDelete(producto.id)}>Eliminar</button>
         </article>
     )
 }
