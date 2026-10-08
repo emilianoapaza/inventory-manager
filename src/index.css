@@ -27,3 +27,23 @@ article {
     gap: 2rem;
     justify-content: center;
 }
+
+.add-products-form {
+max-width: 20rem;
+margin: 2rem auto
+}
+.add-products-form div {
+
+}
+.add-products-form div input, 
+.add-products-form button {
+    width: 100%;
+    margin: .5rem 0;
+    padding: .4rem .2rem;
+    box-sizing: border-box;
+    border-radius: .4rem;
+    border: 1px solid transparent;
+}
+.add-products-form button {
+    margin-top: 1rem;
+}

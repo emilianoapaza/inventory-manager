@@ -65,7 +65,7 @@ function Products() {
         <main>
             <h1>Productos</h1>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="add-products-form">
                 <div>
                     <label htmlFor="nombre">Nombre</label>
                     <input id="nombre" name="nombre" value={formulario.nombre} onChange={handleChange} required />
