@@ -1,14 +1,19 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import AppHome from "./pages/AppHome";
+
 
 function App() {
   return (
-    <main>
-      <h1>Inventory Manager</h1>
-      <p>Sistema de gestión de inventario</p>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/app" element={<AppHome />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
