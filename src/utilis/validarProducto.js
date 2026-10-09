@@ -1,8 +1,6 @@
 export function validarProducto(producto) {
     const errores = {};
 
-    console.log(producto)
-
     if (!producto.nombre.trim()) {
         errores.nombre = "El nombre es obligatorio.";
     }

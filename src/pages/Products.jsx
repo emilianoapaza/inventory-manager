@@ -12,11 +12,35 @@ function Products() {
         stock: "",
     })
     const [errores, setErrores] = useState({})
+    const [productoEditando, setProductoEditando] = useState(null)
 
     function handleDelete(id) {
         setProductos(productosActuales => {
             return productosActuales.filter(producto => producto.id !== id)
         })
+    }
+
+    function handleEdit(producto) {
+        const { nombre, categoria, precio, stock } = producto
+        setProductoEditando(producto)
+        setFormulario({
+            nombre: nombre,
+            categoria: categoria,
+            precio: String(precio),
+            stock: String(stock)
+        })
+        setErrores({})
+    }
+
+    function handleCancelEdit() {
+        setProductoEditando(null)
+        setFormulario({
+            nombre: "",
+            categoria: "",
+            precio: "",
+            stock: "",
+        });
+        setErrores({})
     }
 
     function handleSubmit(e) {
@@ -31,26 +55,31 @@ function Products() {
 
         const { nombre, categoria, precio, stock } = formulario;
 
-        const nuevoProducto = {
-            id: crypto.randomUUID(),
+        const datosProducto = {
             nombre: nombre.trim(),
             categoria: categoria.trim(),
             precio: Number(precio),
             stock: Number(stock)
         }
 
-        setProductos(productos => {
-            return [...productos, nuevoProducto]
-        })
+        if (productoEditando) {
+            setProductos(productosActuales => {
+                return productosActuales.map(producto => {
+                    return producto.id === productoEditando.id ? { ...producto, ...datosProducto } : producto
+                })
+            })
+        } else {
+            const nuevoProducto = {
+                id: crypto.randomUUID(),
+                ...datosProducto
+            }
 
-        setFormulario({
-            nombre: "",
-            categoria: "",
-            precio: "",
-            stock: "",
-        });
+            setProductos(productos => {
+                return [...productos, nuevoProducto]
+            })
+        }
 
-        setErrores({})
+        handleCancelEdit()
     }
 
     function handleChange(e) {
@@ -98,13 +127,20 @@ function Products() {
                     )}
                 </div>
 
-                <button type="submit">Agregar producto</button>
+                <button type="submit">
+                    {productoEditando ? "Guardar cambios" : "Agregar producto"}
+                </button>
+                {productoEditando && (
+                    <button type="button" onClick={handleCancelEdit}>
+                        Cancelar edición
+                    </button>
+                )}
             </form>
 
             <div className="product-list">
                 {productos.length === 0 ? <p>No hay productos registrados</p> :
                     productos.map(producto => (
-                        <ProductCard key={producto.id} producto={producto} onDelete={handleDelete} />
+                        <ProductCard key={producto.id} producto={producto} onDelete={handleDelete} onEdit={handleEdit} />
                     ))
                 }
             </div>
