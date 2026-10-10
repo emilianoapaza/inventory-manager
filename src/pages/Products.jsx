@@ -1,10 +1,16 @@
 import { useState } from "react";
-import { productosIniciales } from "../data/productos";
 import ProductCard from "../components/ProductCard";
 import { validarProducto } from "../utilis/validarProducto";
+import {
+    obtenrProductos,
+    crearProducto,
+    actualizarProducto,
+    eliminarProducto,
+} from "../services/productosService";
+
 
 function Products() {
-    const [productos, setProductos] = useState(productosIniciales);
+    const [productos, setProductos] = useState(obtenrProductos);
     const [formulario, setFormulario] = useState({
         nombre: "",
         categoria: "",
@@ -15,9 +21,9 @@ function Products() {
     const [productoEditando, setProductoEditando] = useState(null)
 
     function handleDelete(id) {
-        setProductos(productosActuales => {
-            return productosActuales.filter(producto => producto.id !== id)
-        })
+        setProductos(productosActuales =>
+            eliminarProducto(productosActuales, id)
+        )
     }
 
     function handleEdit(producto) {
@@ -63,16 +69,13 @@ function Products() {
         }
 
         if (productoEditando) {
-            setProductos(productosActuales => {
-                return productosActuales.map(producto => {
-                    return producto.id === productoEditando.id ? { ...producto, ...datosProducto } : producto
-                })
-            })
+            setProductos(productosActuales =>
+                actualizarProducto(
+                    productosActuales, productoEditando.id, datosProducto
+                )
+            )
         } else {
-            const nuevoProducto = {
-                id: crypto.randomUUID(),
-                ...datosProducto
-            }
+            const nuevoProducto = crearProducto(datosProducto)
 
             setProductos(productos => {
                 return [...productos, nuevoProducto]
