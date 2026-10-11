@@ -1,7 +1,13 @@
-import { productosIniciales } from "../data/productos";
+import { collection, doc, getDocs } from "firebase/firestore";
+import { db } from "../firebase/config";
 
-export function obtenrProductos() {
-    return productosIniciales
+export async function obtenerProductos() {
+    const referencia = collection(db, "productos")
+    const resultados = await getDocs(referencia)
+    return resultados.docs.map(documento => ({
+        id: documento.id,
+        ...documento.data()
+    }))
 }
 
 export function crearProducto(datosProducto) {

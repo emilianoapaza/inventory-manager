@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
 import { validarProducto } from "../utilis/validarProducto";
 import {
-    obtenrProductos,
+    obtenerProductos,
     crearProducto,
     actualizarProducto,
     eliminarProducto,
 } from "../services/productosService";
 
-
 function Products() {
-    const [productos, setProductos] = useState(obtenrProductos);
+    const [productos, setProductos] = useState([]);
+    const [cargando, setCargando] = useState(true)
+    const [error, setError] = useState('')
     const [formulario, setFormulario] = useState({
         nombre: "",
         categoria: "",
@@ -19,6 +20,21 @@ function Products() {
     })
     const [errores, setErrores] = useState({})
     const [productoEditando, setProductoEditando] = useState(null)
+
+    useEffect(() => {
+        async function cargarProductos() {
+            try {
+                const productosObtenidos = await obtenerProductos()
+                setProductos(productosObtenidos);
+            } catch {
+                console.error("Error al cargar productos:", error);
+                setError("No se pudieron cargar los productos.");
+            } finally {
+                setCargando(false);
+            }
+        }
+        cargarProductos()
+    }, [])
 
     function handleDelete(id) {
         setProductos(productosActuales =>
@@ -97,6 +113,12 @@ function Products() {
         <main>
             <h1>Productos</h1>
 
+            {cargando && <p>Cargando productos...</p>}
+
+            {!cargando && error && (
+                <p role="alert">{error}</p>
+            )}
+
             <form onSubmit={handleSubmit} className="add-products-form">
                 <div>
                     <label htmlFor="nombre">Nombre</label>
@@ -140,13 +162,15 @@ function Products() {
                 )}
             </form>
 
-            <div className="product-list">
-                {productos.length === 0 ? <p>No hay productos registrados</p> :
-                    productos.map(producto => (
-                        <ProductCard key={producto.id} producto={producto} onDelete={handleDelete} onEdit={handleEdit} />
-                    ))
-                }
-            </div>
+            {!cargando && !error && (
+                <div className="product-list">
+                    {productos.length === 0 ? <p>No hay productos registrados</p> :
+                        productos.map(producto => (
+                            <ProductCard key={producto.id} producto={producto} onDelete={handleDelete} onEdit={handleEdit} />
+                        ))
+                    }
+                </div>
+            )}
         </main>
     )
 }
