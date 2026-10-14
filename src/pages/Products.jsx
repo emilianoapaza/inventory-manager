@@ -7,6 +7,7 @@ import {
     actualizarProducto,
     eliminarProducto,
 } from "../services/productosService";
+import LogoutButton from "../components/LogoutButton";
 
 function Products() {
     const [productos, setProductos] = useState([]);
@@ -112,6 +113,7 @@ function Products() {
     return (
         <main>
             <h1>Productos</h1>
+            <LogoutButton />
 
             {cargando && <p>Cargando productos...</p>}
 
