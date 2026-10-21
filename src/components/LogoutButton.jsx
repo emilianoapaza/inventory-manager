@@ -4,6 +4,9 @@ import { signOut } from "firebase/auth";
 
 import { auth } from "../firebase/config";
 
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import { Button } from "@mui/material";
+
 export default function LogoutButton() {
     const navigate = useNavigate()
 
@@ -27,13 +30,16 @@ export default function LogoutButton() {
 
     return (
         <div>
-            <button
-                type="button"
+            <Button
+                variant="outlined"
+                color="inherit"
+                startIcon={<LogoutOutlinedIcon />}
+                fullWidth
                 onClick={handleLogout}
                 disabled={cerrandoSesion}
             >
                 {cerrandoSesion ? "Cerrando Sesion..." : "Cerrar Sesion"}
-            </button>
+            </Button>
             {error && <p role="alert">{error}</p>}
         </div>
     )

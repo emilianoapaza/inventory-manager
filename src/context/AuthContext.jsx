@@ -5,12 +5,11 @@ import { auth } from "../firebase/config";
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-    console.log('el authProvider se esta ejecutando')
+    console.log('AuthProvider')
     const [usuario, setUsuario] = useState(null)
     const [cargandoSesion, setCargandoSesion] = useState(true)
 
     useEffect(() => {
-        console.log('el useEffect se esta ejecutando')
         const cancelarSuscripcion = onAuthStateChanged(auth, (usuarioActual) => {
             setUsuario(usuarioActual)
             setCargandoSesion(false)

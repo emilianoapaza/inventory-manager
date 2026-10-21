@@ -1,27 +1,11 @@
 html,
 body,
 #root {
-    margin: 0;
-    padding: 0;
     width: 100%;
-    min-height: 100vh;
-    background-color: #1a1a1a;
-    /* Tu color global */
-    color: #ffffff;
-    /* Opcional: color de texto global */
+    min-height: 100%;
+    margin: 0;
 }
 
-h1, h2, h3 {
-    text-align: center;
-}
-
-article {
-    background-color: #fff;
-    color: #000;
-    padding: 2rem;
-    border-radius: .5rem;
-    font-family: Arial, Helvetica, sans-serif;
-}
 .product-list {
     display: flex;
     gap: 2rem;
@@ -32,9 +16,7 @@ article {
 max-width: 20rem;
 margin: 2rem auto
 }
-.add-products-form div {
 
-}
 .add-products-form div input, 
 .add-products-form button {
     width: 100%;

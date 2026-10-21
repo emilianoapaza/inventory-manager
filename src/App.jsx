@@ -1,33 +1,43 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import AppHome from "./pages/AppHome";
 import Products from "./pages/Products";
 
+import { AuthProvider } from "./context/AuthContext";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import ThemeToggleButton from './components/ThemeToggleButton.jsx';
+
+import { Box } from '@mui/material';
+import AppLayout from "./components/AppLayout.jsx";
 
 function App() {
   return (
     <AuthProvider>
+
       <BrowserRouter>
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/app" element={
-            <ProtectedRoute>
-              <AppHome />
-            </ProtectedRoute>
-          } />
-          <Route path="/app/productos" element={
-            <ProtectedRoute>
+          <Route
+            path="/app"
+            element={
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AppHome />} />
+            <Route path="productos" element={
               <Products />
-            </ProtectedRoute>
-          } />
+            } />
+          </Route>
         </Routes>
       </BrowserRouter>
+
     </AuthProvider>
   );
 }
