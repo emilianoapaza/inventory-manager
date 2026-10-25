@@ -1,4 +1,3 @@
-import LogoutButton from "../components/LogoutButton";
 function AppHome() {
     return (
         <main>

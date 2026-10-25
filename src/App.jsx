@@ -8,9 +8,6 @@ import Products from "./pages/Products";
 import { AuthProvider } from "./context/AuthContext";
 
 import ProtectedRoute from "./components/ProtectedRoute";
-import ThemeToggleButton from './components/ThemeToggleButton.jsx';
-
-import { Box } from '@mui/material';
 import AppLayout from "./components/AppLayout.jsx";
 
 function App() {

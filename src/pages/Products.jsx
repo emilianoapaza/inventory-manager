@@ -7,10 +7,11 @@ import {
     actualizarProducto,
     eliminarProducto,
 } from "../services/productosService";
-import LogoutButton from "../components/LogoutButton";
+import { useAuth } from "../context/AuthContext";
 
 function Products() {
     const [productos, setProductos] = useState([]);
+    console.log(productos)
     const [cargando, setCargando] = useState(true)
     const [error, setError] = useState('')
     const [formulario, setFormulario] = useState({
@@ -21,13 +22,17 @@ function Products() {
     })
     const [errores, setErrores] = useState({})
     const [productoEditando, setProductoEditando] = useState(null)
+    const [errorOperacion, setErrorOperacion] = useState("");
+
+    const { usuario } = useAuth()
 
     useEffect(() => {
         async function cargarProductos() {
             try {
-                const productosObtenidos = await obtenerProductos()
+                const productosObtenidos = await obtenerProductos(usuario.uid)
                 setProductos(productosObtenidos);
-            } catch {
+                setError("")
+            } catch (error) {
                 console.error("Error al cargar productos:", error);
                 setError("No se pudieron cargar los productos.");
             } finally {
@@ -35,12 +40,18 @@ function Products() {
             }
         }
         cargarProductos()
-    }, [])
+    }, [usuario?.uid])
 
-    function handleDelete(id) {
-        setProductos(productosActuales =>
-            eliminarProducto(productosActuales, id)
-        )
+    async function handleDelete(id) {
+        try {
+            await eliminarProducto(usuario.uid, id)
+            setProductos(productosActuales =>
+                productosActuales.filter(producto => producto.id !== id)
+            )
+        } catch (error) {
+            console.error("Error al eliminar el producto:", error);
+            setErrorOperacion("No se pudo eliminar el producto.");
+        }
     }
 
     function handleEdit(producto) {
@@ -66,7 +77,7 @@ function Products() {
         setErrores({})
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault()
 
         const nuevosErrores = validarProducto(formulario);
@@ -84,22 +95,42 @@ function Products() {
             precio: Number(precio),
             stock: Number(stock)
         }
-
-        if (productoEditando) {
-            setProductos(productosActuales =>
-                actualizarProducto(
-                    productosActuales, productoEditando.id, datosProducto
+        try {
+            if (productoEditando) {
+                setCargando(true)
+                const productoActualizado = await actualizarProducto(
+                    usuario.uid, productoEditando.id, datosProducto
                 )
-            )
-        } else {
-            const nuevoProducto = crearProducto(datosProducto)
+                setCargando(false)
+                setProductos(productosActuales =>
+                    productosActuales.map(producto =>
+                        producto.id === productoActualizado.id
+                            ? { ...producto, ...productoActualizado }
+                            : producto
+                    )
+                )
 
-            setProductos(productos => {
-                return [...productos, nuevoProducto]
-            })
+                handleCancelEdit()
+            } else {
+
+                const nuevoProducto = await crearProducto(
+                    usuario.uid,
+                    datosProducto
+                )
+
+                setProductos(productosActuales => [...productosActuales, nuevoProducto])
+
+
+                handleCancelEdit()
+            }
+        }
+        catch (error) {
+            console.error("Error al guardar el producto:", error);
+            setErrorOperacion(
+                productoEditando ? "No se pudieron guardar los cambios del producto" : "No se pudo guardar el producto."
+            );
         }
 
-        handleCancelEdit()
     }
 
     function handleChange(e) {
@@ -118,6 +149,10 @@ function Products() {
 
             {!cargando && error && (
                 <p role="alert">{error}</p>
+            )}
+
+            {errorOperacion && (
+                <p role="alert">{errorOperacion}</p>
             )}
 
             <form onSubmit={handleSubmit} className="add-products-form">
@@ -156,6 +191,7 @@ function Products() {
                 <button type="submit">
                     {productoEditando ? "Guardar cambios" : "Agregar producto"}
                 </button>
+
                 {productoEditando && (
                     <button type="button" onClick={handleCancelEdit}>
                         Cancelar edición

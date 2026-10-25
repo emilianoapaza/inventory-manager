@@ -4,7 +4,7 @@ export function crearTema(mode) {
     const esModoClaro = mode === 'light'
 
     const colores = {
-        primary: esModoClaro ? "#171923" : "#F1F3F9",
+        primary: esModoClaro ? "#8115d3" : "#F1F3F9",
         secondary: esModoClaro ? "#dcdddf" : "#181a23",
         background: esModoClaro ? "#F7F8FC" : "#101318",
         paper: esModoClaro ? "#FFFFFF" : "#191E27",

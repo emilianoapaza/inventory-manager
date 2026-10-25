@@ -1,8 +1,14 @@
-import { collection, doc, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, addDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 
-export async function obtenerProductos() {
-    const referencia = collection(db, "productos")
+
+export async function obtenerProductos(uid) {
+
+    if (!uid) {
+        throw new Error("Ser requiere un usuario autenticado")
+    }
+
+    const referencia = collection(db, "usuarios", uid, "productos")
     const resultados = await getDocs(referencia)
     return resultados.docs.map(documento => ({
         id: documento.id,
@@ -10,21 +16,58 @@ export async function obtenerProductos() {
     }))
 }
 
-export function crearProducto(datosProducto) {
+export async function crearProducto(uid, datosProducto) {
+    if (!uid) {
+        throw new Error("Se requiere un usuario autenticado.");
+    }
+    const referencia = collection(db, "usuarios", uid, "productos");
+    const documento = await addDoc(referencia, datosProducto);
     return {
-        id: crypto.randomUUID(),
+        id: documento.id,
         ...datosProducto
     }
 }
 
-export function actualizarProducto(productos, id, datosActualizados) {
-    return productos.map((producto) =>
-        producto.id === id
-            ? { ...producto, ...datosActualizados }
-            : producto
-    )
+export async function actualizarProducto(uid, id, datosActualizados) {
+
+    if (!uid) {
+        throw new Error("Se requiere un usuario autenticado")
+    }
+
+    if (!id) {
+        throw new Error("Se requiere ID del producto")
+    }
+
+    const referencia = doc(
+        db,
+        "usuarios",
+        uid,
+        "productos",
+        id
+    );
+
+    await updateDoc(referencia, datosActualizados)
+
+    return { id, ...datosActualizados }
+
 }
 
-export function eliminarProducto(productos, id) {
-    return productos.filter((producto) => producto.id !== id);
+export async function eliminarProducto(uid, id) {
+    if (!uid) {
+        throw new Error("Se requiere un usuario autenticado")
+    }
+
+    if (!id) {
+        throw new Error("Se requiere el id del producto")
+    }
+
+    const referencia = doc(
+        db,
+        "usuarios",
+        uid,
+        "productos",
+        id
+    )
+
+    await deleteDoc(referencia)
 }

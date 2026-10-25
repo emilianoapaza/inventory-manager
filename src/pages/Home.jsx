@@ -1,5 +1,5 @@
 
-import { AppBar, Box, Button, Container, List, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
 function Home() {
@@ -44,9 +44,17 @@ function Home() {
                         component={Link}
                         to="/login"
                         variant="contained"
-                        sx={{ mt: 3 }}
-                    >
-                        Empezar Ahora
+                        sx={{
+                            mt: 3,
+                            transition: "background-position 0.7s ease-in-out, transform 0.2s",
+                            background: 'linear-gradient(90deg, #8115d3 0%, #8d2fd5 30%, #a16dc9 50%, #8d2fd5 70%, #8115d3 100%)',
+                            backgroundSize: '220% 100%',
+                            backgroundPosition: 'left center',
+                            '&:hover': {
+                                backgroundPosition: 'right center',
+                            }
+                        }}
+                    >Empezar Ahora
                     </Button>
                 </Box>
 

@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import {
@@ -97,7 +97,8 @@ function Login() {
                 minHeight: "100vh",
                 display: "flex",
                 alignItems: "center",
-                py: { xs: 3, md: 6 }
+                py: { xs: 3, md: 6 },
+                px: { xs: 0, md: 3 }
             }}
         >
             <Container>
@@ -130,7 +131,7 @@ function Login() {
                                     width: 44,
                                     height: 44,
                                     borderRadius: 2.5,
-                                    bgcolor: "rgba(255,255,255,0.15)"
+                                    bgcolor: "hsla(0, 0%, 100%, 0.15)"
                                 }}
                             >
                                 <Inventory2OutlinedIcon />
@@ -163,7 +164,7 @@ function Login() {
                                     p: 3,
                                     borderRadius: 3,
                                     border: "1px solid  rgba(255,255,255,0.18)",
-                                    bgcolor: "rgba(255,255,255,0.08)",
+                                    bgcolor: "#ffffff14",
                                     maxWidth: 390
                                 }}
                             >
