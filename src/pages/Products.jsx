@@ -156,8 +156,8 @@ function Products() {
     }
 
     return (
-        <Box sx={{ maxWidth: "lg", mx: "auto", textAlign: { xs: "center", sm: "left" } }}>
-            <Typography variant="h3" component="h1" sx={{ fontSize: "2.5rem", textAlign: "center" }}>
+        <Box sx={{ maxWidth: "lg", mx: "auto", p: 3, textAlign: { xs: "center", sm: "left" } }}>
+            <Typography variant="h4" component="h1" sx={{ fontWeight: "bold" }}>
                 Productos
             </Typography>
 
