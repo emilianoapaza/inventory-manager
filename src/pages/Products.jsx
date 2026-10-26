@@ -27,6 +27,10 @@ function Products() {
     const [errorOperacion, setErrorOperacion] = useState("");
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
+    // Estados para busqueda
+    const [busqueda, setBusqueda] = useState("");
+    const [categoriaFiltro, setCategoriaFiltro] = useState("Todas");
+
     const { usuario } = useAuth();
 
     useEffect(() => {
@@ -45,6 +49,19 @@ function Products() {
         }
         cargarProductos();
     }, [usuario?.uid]);
+
+    const categorias = [
+        ...new Set(productos.map(producto => producto.categoria.trim())
+            .filter(Boolean)
+        )].sort((a, b) => a.localeCompare(b))
+
+    const productosFiltrados = productos.filter(producto => {
+        const coincideNombre = producto.nombre.toLowerCase().includes(busqueda.trim().toLowerCase())
+
+        const coincideCategoria = categoriaFiltro === "Todas" || producto.categoria === categoriaFiltro
+
+        return coincideNombre && coincideCategoria
+    })
 
     async function handleDelete(id) {
         try {
@@ -158,19 +175,63 @@ function Products() {
                         Agregar Producto
                     </Button>
 
+                    <Box
+                        sx={{
+                            display: "flex",
+                            gap: 2,
+                            flexWrap: "wrap",
+                            px: 3,
+                            mt: 2,
+                        }}
+                    >
+                        <TextField
+                            label="Buscar por nombre"
+                            value={busqueda}
+                            onChange={e => setBusqueda(e.target.value)}
+                            size="small"
+                            sx={{ flex: "1 1 220px" }}
+                        />
+
+                        <TextField
+                            select
+                            label="Filtrar por categoría"
+                            value={categoriaFiltro}
+                            onChange={e => setCategoriaFiltro(e.target.value)}
+                            size="small"
+                            sx={{ flex: "1 1 220px" }}
+                            slotProps={{
+                                select: {
+                                    native: true,
+                                },
+                            }}
+                        >
+                            <option value="Todas">Todas las categorías</option>
+
+                            {categorias.map(categoria => (
+                                <option key={categoria} value={categoria}>
+                                    {categoria}
+                                </option>
+                            ))}
+                        </TextField>
+                    </Box>
+
                     {!cargando && !error && (
                         <Box
                             sx={{ display: "flex", justifyContent: "center", gap: 3, flexWrap: "wrap", py: 3 }}
                         >
-                            {productos.length === 0 ? <p>No hay productos registrados</p> :
-                                productos.map(producto => (
-                                    <ProductCard
-                                        key={producto.id}
-                                        producto={producto}
-                                        onDelete={handleDelete}
-                                        onEdit={handleEdit}
-                                    />
-                                ))
+                            {productos.length === 0 ?
+                                <p>No hay productos registrados</p>
+                                : productosFiltrados.length === 0 ? (
+                                    <p>No se encontraron productos con esos filtros.</p>
+                                ) :
+                                    productosFiltrados.map(producto => (
+                                        <ProductCard
+                                            key={producto.id}
+                                            producto={producto}
+                                            onDelete={handleDelete}
+                                            onEdit={handleEdit}
+                                        />
+                                    ))
                             }
                         </Box>
                     )}
