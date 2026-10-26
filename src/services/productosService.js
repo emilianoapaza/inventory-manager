@@ -5,7 +5,7 @@ import { db } from "../firebase/config";
 export async function obtenerProductos(uid) {
 
     if (!uid) {
-        throw new Error("Ser requiere un usuario autenticado")
+        throw new Error("Se requiere un usuario autenticado")
     }
 
     const referencia = collection(db, "usuarios", uid, "productos")

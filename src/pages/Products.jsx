@@ -9,207 +9,272 @@ import {
 } from "../services/productosService";
 import { useAuth } from "../context/AuthContext";
 
+import { Box, Button, TextField, Typography, Paper } from "@mui/material";
+
 function Products() {
     const [productos, setProductos] = useState([]);
-    console.log(productos)
-    const [cargando, setCargando] = useState(true)
-    const [error, setError] = useState('')
+    const [cargando, setCargando] = useState(true);
+    const [guardando, setGuardando] = useState(false);
+    const [error, setError] = useState('');
     const [formulario, setFormulario] = useState({
         nombre: "",
         categoria: "",
         precio: "",
         stock: "",
-    })
-    const [errores, setErrores] = useState({})
-    const [productoEditando, setProductoEditando] = useState(null)
+    });
+    const [errores, setErrores] = useState({});
+    const [productoEditando, setProductoEditando] = useState(null);
     const [errorOperacion, setErrorOperacion] = useState("");
+    const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
-    const { usuario } = useAuth()
+    const { usuario } = useAuth();
 
     useEffect(() => {
         async function cargarProductos() {
+            if (!usuario?.uid) return;
             try {
-                const productosObtenidos = await obtenerProductos(usuario.uid)
+                const productosObtenidos = await obtenerProductos(usuario.uid);
                 setProductos(productosObtenidos);
-                setError("")
-            } catch (error) {
-                console.error("Error al cargar productos:", error);
+                setError("");
+            } catch (err) {
+                console.error("Error al cargar productos:", err);
                 setError("No se pudieron cargar los productos.");
             } finally {
                 setCargando(false);
             }
         }
-        cargarProductos()
-    }, [usuario?.uid])
+        cargarProductos();
+    }, [usuario?.uid]);
 
     async function handleDelete(id) {
         try {
-            await eliminarProducto(usuario.uid, id)
+            await eliminarProducto(usuario.uid, id);
             setProductos(productosActuales =>
                 productosActuales.filter(producto => producto.id !== id)
-            )
-        } catch (error) {
-            console.error("Error al eliminar el producto:", error);
+            );
+        } catch (err) {
+            console.error("Error al eliminar el producto:", err);
             setErrorOperacion("No se pudo eliminar el producto.");
         }
     }
 
     function handleEdit(producto) {
-        const { nombre, categoria, precio, stock } = producto
-        setProductoEditando(producto)
+        const { nombre, categoria, precio, stock } = producto;
+        setProductoEditando(producto);
         setFormulario({
             nombre: nombre,
             categoria: categoria,
             precio: String(precio),
-            stock: String(stock)
-        })
-        setErrores({})
+            stock: String(stock),
+        });
+        setErrores({});
+        setMostrarFormulario(true)
     }
 
     function handleCancelEdit() {
-        setProductoEditando(null)
+        setProductoEditando(null);
         setFormulario({
             nombre: "",
             categoria: "",
             precio: "",
             stock: "",
         });
-        setErrores({})
+        setErrores({});
+        setMostrarFormulario(false)
     }
 
     async function handleSubmit(e) {
-        e.preventDefault()
-
+        e.preventDefault();
         const nuevosErrores = validarProducto(formulario);
-        setErrores(nuevosErrores)
+        setErrores(nuevosErrores);
 
         if (Object.keys(nuevosErrores).length > 0) {
-            return
+            return;
         }
 
         const { nombre, categoria, precio, stock } = formulario;
-
         const datosProducto = {
             nombre: nombre.trim(),
             categoria: categoria.trim(),
             precio: Number(precio),
-            stock: Number(stock)
-        }
+            stock: Number(stock),
+        };
+
         try {
+            setGuardando(true);
+
             if (productoEditando) {
-                setCargando(true)
                 const productoActualizado = await actualizarProducto(
                     usuario.uid, productoEditando.id, datosProducto
-                )
-                setCargando(false)
+                );
                 setProductos(productosActuales =>
                     productosActuales.map(producto =>
                         producto.id === productoActualizado.id
                             ? { ...producto, ...productoActualizado }
                             : producto
                     )
-                )
-
-                handleCancelEdit()
+                );
             } else {
-
-                const nuevoProducto = await crearProducto(
-                    usuario.uid,
-                    datosProducto
-                )
-
-                setProductos(productosActuales => [...productosActuales, nuevoProducto])
-
-
-                handleCancelEdit()
+                const nuevoProducto = await crearProducto(usuario.uid, datosProducto);
+                setProductos(productosActuales => [...productosActuales, nuevoProducto]);
             }
-        }
-        catch (error) {
-            console.error("Error al guardar el producto:", error);
+
+            handleCancelEdit()
+        } catch (err) {
+            console.error("Error al guardar el producto:", err);
             setErrorOperacion(
                 productoEditando ? "No se pudieron guardar los cambios del producto" : "No se pudo guardar el producto."
             );
+        } finally {
+            setGuardando(false);
         }
-
     }
 
     function handleChange(e) {
-        const { name, value } = e.target
+        const { name, value } = e.target;
         setFormulario(formularioActual => ({
             ...formularioActual,
             [name]: value
-        }))
+        }));
     }
 
     return (
-        <main>
-            <h1>Productos</h1>
+        <Box sx={{ maxWidth: "lg", mx: "auto", textAlign: { xs: "center", sm: "left" } }}>
+            <Typography variant="h3" component="h1" sx={{ fontSize: "2.5rem", textAlign: "center" }}>
+                Productos
+            </Typography>
 
             {cargando && <p>Cargando productos...</p>}
+            {!cargando && error && <p role="alert">{error}</p>}
+            {errorOperacion && <p role="alert">{errorOperacion}</p>}
 
-            {!cargando && error && (
-                <p role="alert">{error}</p>
+            {!mostrarFormulario ? (
+                <>
+                    <Button
+                        variant="contained"
+                        onClick={() => { setMostrarFormulario(true); setErrores({}); }}
+                        sx={{ m: 3 }}
+                    >
+                        Agregar Producto
+                    </Button>
+
+                    {!cargando && !error && (
+                        <Box
+                            sx={{ display: "flex", justifyContent: "center", gap: 3, flexWrap: "wrap", py: 3 }}
+                        >
+                            {productos.length === 0 ? <p>No hay productos registrados</p> :
+                                productos.map(producto => (
+                                    <ProductCard
+                                        key={producto.id}
+                                        producto={producto}
+                                        onDelete={handleDelete}
+                                        onEdit={handleEdit}
+                                    />
+                                ))
+                            }
+                        </Box>
+                    )}
+                </>
+            ) : (
+                <Paper
+                    component="form"
+                    onSubmit={handleSubmit}
+                    elevation={3}
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2.5,
+                        maxWidth: 450,
+                        mx: "auto",
+                        my: 4,
+                        p: 4,
+                        textAlign: "left"
+                    }}
+                >
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+                        {productoEditando ? "Editar Producto" : "Nuevo Producto"}
+                    </Typography>
+
+                    <TextField
+                        id="nombre"
+                        name="nombre"
+                        label="Nombre"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={formulario.nombre}
+                        onChange={handleChange}
+                        error={Boolean(errores.nombre)}
+                        helperText={errores.nombre}
+                    />
+
+                    <TextField
+                        id="categoria"
+                        name="categoria"
+                        label="Categoría"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={formulario.categoria}
+                        onChange={handleChange}
+                        error={Boolean(errores.categoria)}
+                        helperText={errores.categoria}
+                    />
+
+                    <TextField
+                        id="precio"
+                        name="precio"
+                        label="Precio"
+                        type="number"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={formulario.precio}
+                        onChange={handleChange}
+                        error={Boolean(errores.precio)}
+                        helperText={errores.precio}
+                    />
+
+                    <TextField
+                        id="stock"
+                        name="stock"
+                        label="Stock"
+                        type="number"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={formulario.stock}
+                        onChange={handleChange}
+                        error={Boolean(errores.stock)}
+                        helperText={errores.stock}
+                    />
+
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        size="large"
+                        fullWidth
+                        disabled={guardando}
+                        sx={{ mt: 1 }}
+                    >
+                        {guardando
+                            ? "Guardando..."
+                            : (productoEditando ? "Guardar cambios" : "Agregar producto")}
+                    </Button>
+
+                    <Button
+                        type="button"
+                        variant="outlined"
+                        color="inherit"
+                        fullWidth
+                        onClick={handleCancelEdit}
+                    >
+                        Cancelar
+                    </Button>
+                </Paper>
             )}
-
-            {errorOperacion && (
-                <p role="alert">{errorOperacion}</p>
-            )}
-
-            <form onSubmit={handleSubmit} className="add-products-form">
-                <div>
-                    <label htmlFor="nombre">Nombre</label>
-                    <input id="nombre" name="nombre" value={formulario.nombre} onChange={handleChange} required />
-                    {errores.nombre && (
-                        <p role="alert">{errores.nombre}</p>
-                    )}
-                </div>
-
-                <div>
-                    <label htmlFor="categoria">Categoría</label>
-                    <input id="categoria" name="categoria" value={formulario.categoria} onChange={handleChange} required />
-                    {errores.categoria && (
-                        <p role="alert">{errores.categoria}</p>
-                    )}
-                </div>
-
-                <div>
-                    <label htmlFor="precio">Precio</label>
-                    <input id="precio" name="precio" type="number" value={formulario.precio} onChange={handleChange} required />
-                    {errores.precio && (
-                        <p role="alert">{errores.precio}</p>
-                    )}
-                </div>
-
-                <div>
-                    <label htmlFor="stock">Stock</label>
-                    <input id="stock" name="stock" type="number" value={formulario.stock} onChange={handleChange} required />
-                    {errores.stock && (
-                        <p role="alert">{errores.stock}</p>
-                    )}
-                </div>
-
-                <button type="submit">
-                    {productoEditando ? "Guardar cambios" : "Agregar producto"}
-                </button>
-
-                {productoEditando && (
-                    <button type="button" onClick={handleCancelEdit}>
-                        Cancelar edición
-                    </button>
-                )}
-            </form>
-
-            {!cargando && !error && (
-                <div className="product-list">
-                    {productos.length === 0 ? <p>No hay productos registrados</p> :
-                        productos.map(producto => (
-                            <ProductCard key={producto.id} producto={producto} onDelete={handleDelete} onEdit={handleEdit} />
-                        ))
-                    }
-                </div>
-            )}
-        </main>
-    )
+        </Box>
+    );
 }
 
-export default Products
+export default Products;

@@ -101,7 +101,7 @@ function Login() {
                 px: { xs: 0, md: 3 }
             }}
         >
-            <Container>
+            <Container sx={{ px: { xs: 3, sm: 6 } }}>
                 <Box
                     sx={{
                         display: "grid",

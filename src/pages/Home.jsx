@@ -28,14 +28,19 @@ function Home() {
                     </Toolbar>
                 </Container>
             </AppBar>
-            <Container maxWidth="md" sx={{ p: 15 }}>
+            <Container
+                maxWidth="md"
+                sx={{
+                    py: 15,
+                    px: { xs: 2.5, sm: 15 }
+                }}>
 
                 <Box sx={{ textAlign: "center" }} >
                     <Typography
                         variant="h3"
                         component="h1"
                         gutterBottom
-                        sx={{ fontWeight: 900, textWrap: "balance" }}
+                        sx={{ fontWeight: 900, textWrap: "balance", fontSize: { xs: "1.8rem", sm: "3rem" } }}
                     >
                         Gestiona tu inventario de forma Rapida y Automatizada en un solo lugar
                     </Typography>
@@ -45,7 +50,7 @@ function Home() {
                         to="/login"
                         variant="contained"
                         sx={{
-                            mt: 3,
+                            mt: { xs: 5, sm: 3 },
                             transition: "background-position 0.7s ease-in-out, transform 0.2s",
                             background: 'linear-gradient(90deg, #8115d3 0%, #8d2fd5 30%, #a16dc9 50%, #8d2fd5 70%, #8115d3 100%)',
                             backgroundSize: '220% 100%',
