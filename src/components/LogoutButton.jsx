@@ -32,7 +32,7 @@ export default function LogoutButton() {
         <div>
             <Button
                 variant="outlined"
-                color="inherit"
+                sx={{ color: "primay.main" }}
                 startIcon={<LogoutOutlinedIcon />}
                 fullWidth
                 onClick={handleLogout}

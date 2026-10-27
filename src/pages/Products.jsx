@@ -170,7 +170,7 @@ function Products() {
                     <Button
                         variant="contained"
                         onClick={() => { setMostrarFormulario(true); setErrores({}); }}
-                        sx={{ m: 3 }}
+                        sx={{ my: 3 }}
                     >
                         Agregar Producto
                     </Button>
@@ -180,7 +180,6 @@ function Products() {
                             display: "flex",
                             gap: 2,
                             flexWrap: "wrap",
-                            px: 3,
                             mt: 2,
                         }}
                     >

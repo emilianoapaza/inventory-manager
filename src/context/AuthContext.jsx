@@ -8,7 +8,6 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
     console.log('AuthProvider')
     const [usuario, setUsuario] = useState(null)
-    console.log(usuario)
     const [cargandoSesion, setCargandoSesion] = useState(true)
 
     useEffect(() => {

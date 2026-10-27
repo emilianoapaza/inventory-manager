@@ -1,8 +1,29 @@
 
-import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Container, Skeleton, Toolbar, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import LogoutButton from "../components/LogoutButton";
 
 function Home() {
+
+    const { usuario, cargandoSesion } = useAuth()
+    console.log(usuario)
+
+    if (cargandoSesion) {
+        return (
+            <AppBar position="static" color="transparent" elevation={0} sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Container maxWidth="lg">
+                    <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
+                        <Typography variant="h6" component="div" sx={{ fontWeight: "bold" }}>
+                            Inventory Manager
+                        </Typography>
+                        <Skeleton variant="rounded" width={155} height={42} sx={{ borderRadius: "20px" }} />
+                    </Toolbar>
+                </Container>
+            </AppBar>
+        )
+    }
+
     return (
         <>
             <AppBar
@@ -17,14 +38,18 @@ function Home() {
                             Inventory Manager
                         </Typography>
 
-                        <Button
-                            component={Link}
-                            to="/login"
-                            variant="outlined"
-                            disableElevation
-                        >
-                            Log In
-                        </Button>
+                        {usuario ? (
+                            <LogoutButton />
+                        ) : (
+                            <Button
+                                component={Link}
+                                to="/login"
+                                variant="outlined"
+                                disableElevation
+                            >
+                                Log In
+                            </Button>
+                        )}
                     </Toolbar>
                 </Container>
             </AppBar>
@@ -47,7 +72,7 @@ function Home() {
 
                     <Button
                         component={Link}
-                        to="/login"
+                        to={usuario ? "/app" : "/login"}
                         variant="contained"
                         sx={{
                             mt: { xs: 5, sm: 3 },

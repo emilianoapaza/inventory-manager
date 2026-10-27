@@ -5,6 +5,7 @@ import { AppBar, Box, Drawer, IconButton, List, ListItemButton, ListItemIcon, Li
 import { useTheme } from "@mui/material/styles";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
+import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -25,12 +26,19 @@ const navigationItems = [
         path: "/app/productos",
         icon: <Inventory2OutlinedIcon />,
         end: false
+    },
+    {
+        label: "Ir al Inicio",
+        path: "/",
+        icon: <HomeIcon />,
+        end: true
     }
 ]
 
 export default function AppLayout() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const location = useLocation();
+    console.log(location.pathname)
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -50,7 +58,7 @@ export default function AppLayout() {
         >
             <Box sx={{ px: 3, py: 3 }}>
                 <Typography variant="h6" fontWeight={800}>
-                    Inventory<span style={{ color: "#818CF8" }}>.</span>
+                    Inventory
                 </Typography>
 
                 <Typography variant="caption" color="text.secondary">
